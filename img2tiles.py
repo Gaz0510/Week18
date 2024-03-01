@@ -14,8 +14,8 @@ def crop_to_4_3(img):
         upper = (height - target_height) // 2
         lower = height - upper
 
-        # Crop the image to a 4:3 aspect ratio
-        img = img.crop((0, upper, width, lower))
+        # Crop the image to a 4:3 aspect ratio, maintaining a square aspect ratio
+        img = img.crop((0, upper, width, min(lower, target_height)))
 
     return img
 
@@ -28,16 +28,15 @@ def split_image(input_path, output_path):
     width, height = img.size
 
     # Calculate the size of each square
-    square_width = width // 3
-    square_height = height // 4
+    square_size = min(width // 3, height // 4)
 
     # Loop through each row and column to crop and save the squares
     for row in range(4):
         for col in range(3):
-            left = col * square_width
-            upper = row * square_height
-            right = left + square_width
-            lower = upper + square_height
+            left = col * square_size
+            upper = row * square_size
+            right = left + square_size
+            lower = upper + square_size
 
             # Crop the image and save the square
             square = img.crop((left, upper, right, lower))
@@ -45,7 +44,7 @@ def split_image(input_path, output_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python img2tiles.py <input_image_path> <output_directory>")
+        print("Usage: python script.py <input_image_path> <output_directory>")
         sys.exit(1)
 
     input_image_path = sys.argv[1]
