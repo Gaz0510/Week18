@@ -19,6 +19,10 @@ def crop_to_4_3(img):
 
     return img
 
+def resize_image(img, square_size):
+    # Resize the image to the specified square size
+    return img.resize((square_size, square_size))
+
 def split_image(input_path, output_path):
     # Open and crop the image if necessary
     img = Image.open(input_path)
@@ -27,24 +31,30 @@ def split_image(input_path, output_path):
     # Get the dimensions of the cropped image
     width, height = img.size
 
-    # Calculate the size of each square
-    square_size = min(width // 3, height // 4)
+    # Define the size of each square
+    square_size = 119
 
-    # Loop through each row and column to crop and save the squares
-    for row in range(4):
-        for col in range(3):
-            left = col * square_size
-            upper = row * square_size
-            right = left + square_size
-            lower = upper + square_size
+    # Loop through each row and column to crop, resize, and save the squares
+    for row in range(3):
+        for col in range(4):
+            index = row * 4 + col
+            left = col * (width // 4)
+            upper = row * (height // 3)
+            right = left + (width // 4)
+            lower = upper + (height // 3)
 
-            # Crop the image and save the square
+            # Crop the image
             square = img.crop((left, upper, right, lower))
-            square.save(f"{output_path}/tile_{row * 3 + col}.jpg")
+
+            # Resize the square
+            square = resize_image(square, square_size)
+
+            # Save the square
+            square.save(f"{output_path}/tile_{index}.jpg")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python script.py <input_image_path> <output_directory>")
+        print("Usage: python img2tiles.py <input_image_path> <output_directory>")
         sys.exit(1)
 
     input_image_path = sys.argv[1]
