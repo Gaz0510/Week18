@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.Random;
 import javax.swing.*;
 
 public class TilePuzzle implements ActionListener {
@@ -13,12 +13,24 @@ public class TilePuzzle implements ActionListener {
         GridLayout layout = new GridLayout(3, 4);
         JFrame frame = new JFrame();
         JPanel panel = new JPanel(layout);
+        Boolean blankTilePlaced = false;
 
         for (int i = 0; i < tiles.length; i++) {
-            TilePiece thisTile = new TilePiece(new String("tile_" + i + ".jpg"), 50, 50);
-            tiles[i] = thisTile;
-            panel.add(thisTile);
-            thisTile.addActionListener(this);
+            Random rng = new Random();
+            if (!blankTilePlaced && rng.nextInt(12 - i) == 0)
+            {
+                blankTilePlaced = true;
+                tiles[i] = blankTile;
+                panel.add(blankTile);
+                blankTile.addActionListener(this);
+            }
+            else
+            {
+                TilePiece thisTile = new TilePiece(new String("tile_" + i + ".jpg"), 50, 50);
+                tiles[i] = thisTile;
+                panel.add(thisTile);
+                thisTile.addActionListener(this);
+            }
         }
 
         panel.setSize(475, 400);
@@ -32,7 +44,7 @@ public class TilePuzzle implements ActionListener {
 
     public void actionPerformed(ActionEvent e)
     {
-        TilePiece t = (TilePiece) e.getSource();
-        
+        TilePiece t1 = (TilePiece) e.getSource();
+        t1.exchangeImageWith(blankTile);
     }
 }
